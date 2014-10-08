@@ -5,7 +5,7 @@ def decode(str)
 	closeness = {}
 	possibilities.each { |str| closeness[str] = english_score(str) }
 	sorted = closeness.sort_by { |_k, value| value }
-	puts sorted.inspect
+	sorted[0][0]
 end
 
 def english_score(str)
@@ -20,11 +20,10 @@ def english_score(str)
 		'r' => 6,
 		's' => 6,
 		't' => 9,
-		'\u0000' => 14
+		' ' => 14
 		}
 	str_distribution = {}
 	str.each_char do |letter|
-		puts letter.inspect
 		letter = letter.downcase
 		if common_letters.keys.include?(letter)
 			str_distribution[letter] = str_distribution[letter] ? str_distribution[letter] + 1 : 1
@@ -33,11 +32,9 @@ def english_score(str)
 	frequencies = {}
 	str_distribution.each {|letter, freq| frequencies[letter] = freq.to_f / str.length * 100}
 
-	puts frequencies.inspect
 	closeness = 0
 	common_letters.each do |letter, freq|
 		str_freq = frequencies[letter] == nil ? 0 : frequencies[letter]
-		puts "comparing freq #{freq} with str freq #{str_freq}"
 		closeness += (freq - str_freq) ** 2
 	end
 	closeness 
@@ -57,8 +54,8 @@ def decode_hex(str)
 end
 
 def bin_alphabet
-	alphabet = ('a'..'z').to_a
-	alphabet.map! { |letter| letter.unpack('B*').join('')}
+	alphabet = (0..255).to_a
+	alphabet.map! { |num| num.chr.unpack('B*').join('')}
 end
 
 def bin_to_ascii(bin_str)
