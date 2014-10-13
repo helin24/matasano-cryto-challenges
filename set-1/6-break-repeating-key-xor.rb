@@ -1,13 +1,31 @@
 KEYSIZE = (1..40).to_a
 
-def chunk_difference(file, key_byte_size)
+
+def keysize_differences(file, keysizes)
+	bin_str = file_base_64_to_bin_str(file)
+	keysize_hamming_differences = []
+	keysizes.each do |size|
+		abs_diff = chunk_difference(bin_str, size)
+		keysize_hamming_differences << normalize_hamming(abs_diff, size) 
+	end
+	keysize_hamming_differences
+end
+
+def file_base_64_to_bin_str(file)
 	base_64_lines = open_file(file)
 	base_64_file = base_64_lines.join('')
-	bin_file = str_base64_to_bin_str(base_64_file)
-	puts bin_file
-	first_chunk = bin_file[0..(key_byte_size * 8 - 1)]
-	second_chunk = bin_file[(key_byte_size * 8)..(key_byte_size * 8 * 2 -1)]
-	[first_chunk, second_chunk] 
+	bin_str = str_base64_to_bin_str(base_64_file)
+end
+
+def chunk_difference(bin_str, key_byte_size)
+	first_chunk = bin_str[0..(key_byte_size * 8 - 1)]
+	second_chunk = bin_str[(key_byte_size * 8)..(key_byte_size * 8 * 2 -1)]
+	puts [first_chunk, second_chunk]
+	hamming_distance_bin(first_chunk, second_chunk)
+end
+
+def normalize_hamming(value, key_byte_size)
+	value.to_f / key_byte_size
 end
 
 def base64_alphabet
@@ -29,6 +47,10 @@ end
 def hamming_distance(str1, str2)
 	bin_str1 = str_to_bin_str(str1)
 	bin_str2 = str_to_bin_str(str2)
+	hamming_distance_bin(bin_str1, bin_str2)
+end
+
+def hamming_distance_bin(bin_str1, bin_str2)
 	diff = 0
 	bin_str1.length.times do |num|
 		diff += 1 if bin_str1[num] != bin_str2[num]
