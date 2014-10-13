@@ -17,7 +17,7 @@ end
 
 def open_file(filename)
 	file = []
-	File.open('4.txt', 'r') do |f|
+	File.open(filename, 'r') do |f|
 		f.each_line do |line|
 			file << line
 		end
