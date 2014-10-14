@@ -7,6 +7,7 @@ def break_repeating_key_xor(file)
 	keysize_differences = keysize_differences(file, KEYSIZE)
 	key_size = find_key_size(keysize_differences) # gets most likely key size
 	blocks = bin_to_blocks(bin_str, key_size)
+	puts "first in blocks is #{blocks.first.inspect}"
 	transposed_blocks = blocks.transpose # includes some nil elements for padding
 	guess_key = ""
 	transposed_blocks.each do |block|
@@ -18,9 +19,11 @@ def break_repeating_key_xor(file)
 	puts guess_key.inspect
 	puts guess_key.length
 	puts guess_key.split('').inspect
-	key_arr = guess_key.split('').map{|char| char.ord.to_s(2)}
+	key_arr = guess_key.split('').map{|char| char.ord.to_s(2).rjust(8,'0')}
+	puts "key_arr is #{key_arr}"
 	decrypted_bin = xor_bin_arr_bin_key_arr(blocks.flatten, key_arr)
-	translated = decrypted_bin.map{|bin| bin.to_i(2).chr }
+	puts decrypted_bin.first
+	translated = decrypted_bin.map{|bin| bin.to_i(2).chr }.join('')
 end
 
 def xor_bin_arr_bin_key_arr(bin_arr, bin_key_arr)
@@ -103,7 +106,6 @@ end
 def chunk_difference(bin_str, key_byte_size)
 	first_chunk = bin_str[0..(key_byte_size * 8 - 1)]
 	second_chunk = bin_str[(key_byte_size * 8)..(key_byte_size * 8 * 2 -1)]
-	puts [first_chunk, second_chunk]
 	hamming_distance_bin(first_chunk, second_chunk)
 end
 
@@ -124,7 +126,6 @@ def str_base64_to_bin_str(str)
 	num_extra_bits = str.count('=')
 	bin_str = ""
 	str = str[0..-(num_extra_bits + 1)]
-	p str
 	str.each_char do |c|
 		bin_str << base64_alphabet.index(c).to_s(2).rjust(6, '0')
 	end
