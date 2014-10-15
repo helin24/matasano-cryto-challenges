@@ -1,13 +1,18 @@
+# Potential problems
+# base 64 to binary string conversion done very manually -better way to convert?
+# english scoring
+# how distributed are results for english scoring?
+ 
 require_relative '3-single-byte-xor-cipher'
 
 KEYSIZE = (1..40).to_a
 
-def break_repeating_key_xor(file)
+def break_repeating_key_xor(file, key)
 	bin_str = file_base_64_to_bin_str(file)
 	keysize_differences = keysize_differences(file, KEYSIZE)
-	key_size = find_key_size(keysize_differences) # gets most likely key size
+	key_size = 29 
+	# key_size = find_key_size(keysize_differences) # gets most likely key size
 	blocks = bin_to_blocks(bin_str, key_size)
-	puts "first in blocks is #{blocks.first.inspect}"
 	transposed_blocks = blocks.transpose # includes some nil elements for padding
 	guess_key = ""
 	transposed_blocks.each do |block|
@@ -77,8 +82,10 @@ def bin_to_blocks(bin_str, key_size)
 	while bytes.length >= key_size do 
 		blocks << bytes.shift(key_size)
 	end
-	(key_size - bytes.length % key_size).times { bytes << nil } if bytes.length > 0
-	blocks << bytes
+	if bytes.length > 0
+		(key_size - bytes.length % key_size).times { bytes << nil }
+		blocks << bytes
+	end
 	blocks	
 end
 
