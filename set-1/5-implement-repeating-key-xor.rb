@@ -1,6 +1,7 @@
 require_relative '4-detect-single-character-xor'
 
 str1 = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+str1 = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
 str2 = "I go crazy when I hear a cymbal"
 key = "ICE"
 
@@ -14,3 +15,5 @@ def repeat_key_xor(str,key)
 	xor_str
 end
 
+puts repeat_key_xor(str1, key)
+puts repeat_key_xor(str2, key)

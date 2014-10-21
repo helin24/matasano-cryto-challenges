@@ -20,11 +20,11 @@ def english_score(str)
 		'r' => 6,
 		's' => 6,
 		't' => 9,
-		' ' => 14
+		' ' => 14,
+		127.chr => -100
 		}
 	str_distribution = {}
 	str.each_char do |letter|
-		letter = letter.downcase
 		if common_letters.keys.include?(letter)
 			str_distribution[letter] = str_distribution[letter] ? str_distribution[letter] + 1 : 1
 		end

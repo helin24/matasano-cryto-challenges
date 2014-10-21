@@ -5,13 +5,14 @@
  
 require_relative '3-single-byte-xor-cipher'
 
-KEYSIZE = (1..40).to_a
+KEYSIZE = (2..40).to_a
 
 def break_repeating_key_xor(file, key)
 	bin_str = file_base_64_to_bin_str(file)
 	keysize_differences = keysize_differences(file, KEYSIZE)
-	key_size = 29 
-	# key_size = find_key_size(keysize_differences) # gets most likely key size
+	puts "keysize_differences is #{keysize_differences}"
+	key_size = find_key_size(keysize_differences) # gets most likely key size
+	puts "most likely key size is #{key_size}"
 	blocks = bin_to_blocks(bin_str, key_size)
 	transposed_blocks = blocks.transpose # includes some nil elements for padding
 	guess_key = ""
@@ -111,9 +112,16 @@ def file_base_64_to_bin_str(file)
 end
 
 def chunk_difference(bin_str, key_byte_size)
-	first_chunk = bin_str[0..(key_byte_size * 8 - 1)]
-	second_chunk = bin_str[(key_byte_size * 8)..(key_byte_size * 8 * 2 -1)]
-	hamming_distance_bin(first_chunk, second_chunk)
+	all_chunks = []
+	string = bin_str.dup
+	while string.length > key_byte_size * 8 do 
+		all_chunks << string.slice!(0..key_byte_size * 8 - 1)
+	end
+	distances = []
+	( all_chunks.length - 1 ).times do |i|
+		distances << hamming_distance_bin(all_chunks[i], all_chunks[i+1])
+	end
+	distances.reduce(:+).to_f / distances.length
 end
 
 def normalize_hamming(value, key_byte_size)
